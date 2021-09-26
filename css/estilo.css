@@ -1,0 +1,33 @@
+
+body {
+    background: url("../imagens/madeira.jpg") #D2B48C;
+    
+    
+	
+	}
+   
+h1{
+    color:#0000FF;
+}
+ 
+img.bola{
+    /*
+
+		padding:2px;
+    margin-left:0.1em;
+    margin-top:0.1em;
+border:1px solid #D2B48C;
+border-radius:15px;*/
+border-radius:60px;
+border:4px solid #db7;
+
+		width: 112px;
+    height:112px;
+} 
+
+.botao{
+	font-size: 20px;
+	font-family:arial, verdana, sans-serif;
+    height:70px;
+	width: 116px;
+}
