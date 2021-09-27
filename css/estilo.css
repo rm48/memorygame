@@ -1,33 +1,131 @@
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
 
+.clear{clear: both;}
+
+.container{
+	max-width: 1280px;
+	margin:0 auto;
+	background: url("../imagens/madeira.jpg") #D2B48C;
+}
+.box-single{
+	width: 100%;
+	float: left;
+}
+
+@media screen and (min-width: 768px){
+	.box-single{
+	width: 33.3%;
+
+}
+}
+/*
 body {
-    background: url("../imagens/madeira.jpg") #D2B48C;
     
-    
-	
 	}
-   
+ */
 h1{
     color:#0000FF;
 }
+.card {
+float: left;
+	
+}
  
 img.bola{
+		
     /*
 
 		padding:2px;
     margin-left:0.1em;
     margin-top:0.1em;
 border:1px solid #D2B48C;
-border-radius:15px;*/
-border-radius:60px;
+		width: 222px;
+    height:222px;
+*/
+border-radius:40px;
 border:4px solid #db7;
 
-		width: 112px;
-    height:112px;
+
 } 
 
-.botao{
-	font-size: 20px;
-	font-family:arial, verdana, sans-serif;
-    height:70px;
-	width: 116px;
+img.bola:hover{
+	/*border:4px solid #d30;*/
+	color: #FFF;
+	border-color: #0fbf6e;
+	box-shadow: 0 0 0 15px rgba(255, 255, 255, 0);
+	animation: pulsar 1s;
 }
+
+@keyframes pulsar {
+	0% {
+		box-shadow: 0 0 0 0 #0fbf6e;
+	}
+}
+
+.botao{
+	margin:0.3em 0.1em 0.3em 0.2em;
+	/*font-size: 40px;
+	font-family:arial, verdana, sans-serif;
+    height:140px;
+	width: 222px;
+	*/
+	font-size: 20px;
+	    height:50px;
+	width: 150px;
+}
+#contador{
+	float: left;	
+	margin-left:0.3em;
+	
+	font-size: 20px;
+	color: #00f;
+	height:70px;
+	width: 150px;
+	border:1px solid #00f;
+}
+.alert-danger{
+	float: left;
+	margin-left:0.3em;
+	font-size: 20px;
+	color: #f00;
+	height:70px;
+	width: 110px;
+	border:1px solid #f00;
+	
+}
+
+.alert-success{
+	float: left;
+	margin-left:0.3em;
+	font-size: 20px;
+	color: #00f;
+	height:70px;
+	width: 110px;
+	border:1px solid #00f;
+	
+}
+#mensagem{
+	float: left;
+	margin-left:0.3em;
+	font-size: 20px;
+	
+	height:70px;
+	width: 150px;
+	
+
+}
+
+
+
+.container{
+
+	
+}
+
+
+
+

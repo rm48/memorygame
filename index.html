@@ -2,26 +2,41 @@
 <html lang="ptBR">
   <head>
     <meta charset="UTF-8" />
-   
+   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
     <title>Memory Game</title>
    <link rel="stylesheet" type="text/css" href="css/estilo.css" />
     <script src="./index.js"></script>
+	<script src="./src/util.js"></script>
 	<script src="./src/jogoDaMemoria.js"></script>
     <script src="./src/tela.js"></script>
     
   </head>
-  <body >
-    <br />
-    <div >
+  <body class="container">
+  <div class="box">
+    <div class="box-single">
         <button type="button"  id="jogar" class="botao">JOGAR</button>
-        <button type="button" id="mostrar" class="botao">MOSTRAR</button>
-		<button type="button" id="saldo" class="botao">SALDO</button>
-		<button type="button" id="banco" class="botao">BANCO</button>
-		
+		<button type="button" id="mostrarTudo" class="botao" >
+        MOSTRAR
+      </button>
     </div>
-    <br />
-    <div id="conteudo">
-         
-    </div> 
+	<div class="box-single">
+      <div id="mensagem" class="alert-success"></div>
+        <div 	 id="contador" > 
+	
+		
+	</div>
+      
+      
+   
+	
+	
+	</div>
+
+	<div class="box-single" id="conteudo">
+	</div>
+	<div class="clear"></div>
+	
+  </div>
   </body>
 </html>
+

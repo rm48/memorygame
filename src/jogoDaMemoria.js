@@ -6,6 +6,7 @@ class JogoDaMemoria {
     
     constructor({ tela }) {
         this.tela = tela
+        this.util = util
         this.iconePadrao = './imagens/0.gif'
         this.numerosIniciais = [
             // relativo ao index.html pois será carregado lá
@@ -22,7 +23,7 @@ class JogoDaMemoria {
         ]
         
         this.numerosEscondidos = []
-        
+        this.numerosSelecionados = []
     }
 
     // 1o -para usar o this, nao podemos usar o static
@@ -32,9 +33,10 @@ class JogoDaMemoria {
         this.tela.atualizarImagens(this.numerosIniciais)
         //força a tela a usar o This de JogoDaMemoria
         this.tela.configurarBotaoJogar(this.jogar.bind(this))
-        
+        this.tela.configurarClickVerificarSelecao(this.verificarSelecao.bind(this))
+        this.tela.configurarBotaoMostrarTudo(this.mostrarNumerosEscondidos.bind(this))
     }
-    embaralhar() {
+    async embaralhar() {
         const copias = this.numerosIniciais
         // duplicar os itens
         .concat(this.numerosIniciais)
@@ -46,10 +48,16 @@ class JogoDaMemoria {
         .sort(() => Math.random() - 0.5)
 
         this.tela.atualizarImagens(copias)
-        // vamos esperar 1 segundo para atualizar a tela
-        setTimeout(() => {
-            this.esconderNumeros(copias)
-        }, 1000);
+       // this.tela.exibirCarregando()
+
+
+        const idIntervalo = this.tela.iniciarContador()
+        await this.util.timeout(3000);
+        this.tela.limparContador(idIntervalo)
+
+        this.esconderNumeros(copias)
+        //this.tela.exibirCarregando(false)
+      
     }
     esconderNumeros(numeros) {
         // vamos trocar a imagem de todos os numeros existentes
@@ -67,8 +75,50 @@ class JogoDaMemoria {
         // atualizamos a tela com os numeros ocultos
         this.tela.atualizarImagens(numerosOcultos)
         //guardamos os numeros para trabalhar com eles depois
-        this.numerosOcultos = numerosOcultos
+        this.numerosEscondidos = numerosOcultos
     }
+    exibirNumeros(nomeDoNumero) {
+        // vamos procurar esse numero pelo nome em nossos numerosIniciais
+        // vamos obter somente a imagem dele
+        const { img } = this.numerosIniciais.find(({ nome }) => nomeDoNumero === nome)
+        // vamos criar a funcao na tela, para exibir somente o numero selecionado
+        this.tela.exibirNumeros(nomeDoNumero, img)
+    }
+    verificarSelecao(id, nome){
+        const item = {id, nome }
+        //alert(`Olá: ${item.id}, ${item.nome}`)
+        const numerosSelecionados = this.numerosSelecionados.length
+        switch(numerosSelecionados) {
+            case 0: 
+                // adiciona a escolha na lista e espera o proximo clique
+                this.numerosSelecionados.push(item)
+                break;
+            case 1: 
+                const [ opcao1 ] = this.numerosSelecionados
+                // zerar itens, para nao selecionar mais de dois
+                this.numerosSelecionados = []
+                let deveMostrarMensagem = false
+                if(opcao1.nome === item.nome && opcao1.id !== id) {
+                   deveMostrarMensagem = true 
+                   // alert('combinação correta!')
+                    this.exibirNumeros(item.nome)
+                    this.tela.exibirMensagem(true)
+                    return;
+                }
+                //alert('combinação incorreta!')
+                this.tela.exibirMensagem(false)
+                break;
+        }
+    }
+    mostrarNumerosEscondidos() {
+        const numerosEscondidos = this.numerosEscondidos
+        for (const numero of numerosEscondidos) {
+            const { img } = this.numerosIniciais.find(item => item.nome === numero.nome)
+            numero.img = img
+        }
+        this.tela.atualizarImagens(numerosEscondidos)
+    }
+
     jogar() {
         this.embaralhar()
     }
