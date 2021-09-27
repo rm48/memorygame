@@ -1,5 +1,5 @@
 function onLoad () {
-
+     
    const dependencias = {
        tela: Tela,
        util: Util

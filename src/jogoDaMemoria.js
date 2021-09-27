@@ -1,122 +1,109 @@
+
 class JogoDaMemoria {
-    // 3o importar a tela como dependencia
-    // iria funcionar sem importar chamando a variavel Tela global
-    // mas não é uma boa prática, a melhor prática é obter esse valor por dependencia
-    // depois usar a partir do this
-    
-    constructor({ tela }) {
+
+
+    constructor({ tela, util }) {
         this.tela = tela
         this.util = util
-        this.iconePadrao = './imagens/0.gif'
-        this.numerosIniciais = [
-            // relativo ao index.html pois será carregado lá
-            { img: './imagens/1.gif', nome: '1'},
-            { img: './imagens/2.gif', nome: '2'},
-            { img: './imagens/3.gif', nome: '3'},
-            { img: './imagens/4.gif', nome: '4'},
-            { img: './imagens/5.gif', nome: '5'},
-            { img: './imagens/6.gif', nome: '6'},
-            { img: './imagens/7.gif', nome: '7'},
-            { img: './imagens/8.gif', nome: '8'},
-            { img: './imagens/9.gif', nome: '9'},
-            { img: './imagens/10.gif', nome: '10'},
+
+        this.iconePadrao = './arquivos/default.gif'
+        this.heroisIniciais = [
+            { img: './arquivos/1.gif', nome: '1' },
+            { img: './arquivos/2.gif', nome: '2' },
+            { img: './arquivos/3.gif', nome: '3' },
+            { img: './arquivos/4.gif', nome: '4' },
+            { img: './arquivos/5.gif', nome: '5' },
+            { img: './arquivos/6.gif', nome: '6' },
+            { img: './arquivos/7.gif', nome: '7' },
+            { img: './arquivos/8.gif', nome: '8' },
+            { img: './arquivos/9.gif', nome: '9' },
+            { img: './arquivos/10.gif', nome: '10' },
+
+
         ]
-        
-        this.numerosEscondidos = []
-        this.numerosSelecionados = []
+
+        this.heroisEscondidos = []
+        this.heroisSelecionados = []
     }
 
-    // 1o -para usar o this, nao podemos usar o static
     inicializar() {
-        // 2o - vamos precisar importar a tela para fazer alterações nela
-        // 3o - chamar a funcao de tela apara atualizar as imagens
-        this.tela.atualizarImagens(this.numerosIniciais)
-        //força a tela a usar o This de JogoDaMemoria
+        this.tela.atualizarImagens(this.heroisIniciais)
+        // quando essa função executar, vai ignorar o this de window 
+        // ela vai usar o this dessa tela
         this.tela.configurarBotaoJogar(this.jogar.bind(this))
         this.tela.configurarClickVerificarSelecao(this.verificarSelecao.bind(this))
-        this.tela.configurarBotaoMostrarTudo(this.mostrarNumerosEscondidos.bind(this))
+        this.tela.configurarBotaoMostrarTudo(this.mostrarHeroisEscondidos.bind(this))
+
+    }
+    esconderHerois(herois) {
+        const heroisOcultos = herois.map(({ nome, id }) => ({
+            id,
+            nome,
+            img: this.iconePadrao
+        }))
+
+        this.tela.atualizarImagens(heroisOcultos)
+        this.heroisEscondidos = heroisOcultos
+    }
+
+    exibirHerois(nomeHeroi) {
+        const { img } = this.heroisIniciais.find(({ nome }) => nomeHeroi === nome)
+        this.tela.exibirHerois(nomeHeroi, img)
+    }
+
+    verificarSelecao(id, nome) {
+        const item = { id, nome }
+        // alert(`Olá: ${nome}, id: ${id}`)
+        const heroisSelecionados = this.heroisSelecionados.length
+        switch (heroisSelecionados) {
+            case 0:
+                this.heroisSelecionados.push(item)
+                break;
+            case 1:
+                const [opcao1] = this.heroisSelecionados
+                // zerar itens, para nao selecionar mais de dois
+                this.heroisSelecionados = []
+                let deveMostrarMensagem = false
+                if (opcao1.nome === item.nome && opcao1.id !== id) {
+                    deveMostrarMensagem = true
+                    this.exibirHerois(item.nome)
+                    this.tela.exibirMensagem(true)
+                    return;
+                }
+                this.tela.exibirMensagem(false)
+                break;
+        }
+    }
+    mostrarHeroisEscondidos() {
+        const heroisEscondidos = this.heroisEscondidos
+        for (const heroi of heroisEscondidos) {
+            const { img } = this.heroisIniciais.find(item => item.nome === heroi.nome)
+            heroi.img = img
+        }
+        this.tela.atualizarImagens(heroisEscondidos)
     }
     async embaralhar() {
-        const copias = this.numerosIniciais
-        // duplicar os itens
-        .concat(this.numerosIniciais)
-        // entrar em cada item e criar um id aleatorio
-        .map(item => {
-            return Object.assign({}, item, { id: Math.random() / 0.5})
-        })
-        //ordenar aleatoriamente
-        .sort(() => Math.random() - 0.5)
+        const copias = this.heroisIniciais
+
+            // duplicar os itens
+            .concat(this.heroisIniciais)
+            // entrar em cada um dos itens e gerar um id para cada
+            .map((item) => {
+                return Object.assign({}, item, { id: (Math.random() / 0.5) })
+            })
+            // ordenar
+            .sort(() => Math.random() - 0.5)
 
         this.tela.atualizarImagens(copias)
-       // this.tela.exibirCarregando()
-
+        this.tela.exibirCarregando()
 
         const idIntervalo = this.tela.iniciarContador()
         await this.util.timeout(3000);
         this.tela.limparContador(idIntervalo)
 
-        this.esconderNumeros(copias)
-        //this.tela.exibirCarregando(false)
-      
-    }
-    esconderNumeros(numeros) {
-        // vamos trocar a imagem de todos os numeros existentes
-        // pelo icone padrao 0
-        // como fizemos no construtor, vamos extrair somente o necessario
-        // usando a sintaxe ({ chave: 1 }) estamos falando que vamos retornar
-        // o que tiver dentro dos parenteses
-        // quando nao usamos : (exemplo do id), o JS entende que o nome
-        // é o mesmo do valor. Ex. id, vira id,
-        const numerosOcultos = numeros.map(( { nome, id }) => ({
-            id,
-            nome,
-            img: this.iconePadrao
-        }))
-        // atualizamos a tela com os numeros ocultos
-        this.tela.atualizarImagens(numerosOcultos)
-        //guardamos os numeros para trabalhar com eles depois
-        this.numerosEscondidos = numerosOcultos
-    }
-    exibirNumeros(nomeDoNumero) {
-        // vamos procurar esse numero pelo nome em nossos numerosIniciais
-        // vamos obter somente a imagem dele
-        const { img } = this.numerosIniciais.find(({ nome }) => nomeDoNumero === nome)
-        // vamos criar a funcao na tela, para exibir somente o numero selecionado
-        this.tela.exibirNumeros(nomeDoNumero, img)
-    }
-    verificarSelecao(id, nome){
-        const item = {id, nome }
-        //alert(`Olá: ${item.id}, ${item.nome}`)
-        const numerosSelecionados = this.numerosSelecionados.length
-        switch(numerosSelecionados) {
-            case 0: 
-                // adiciona a escolha na lista e espera o proximo clique
-                this.numerosSelecionados.push(item)
-                break;
-            case 1: 
-                const [ opcao1 ] = this.numerosSelecionados
-                // zerar itens, para nao selecionar mais de dois
-                this.numerosSelecionados = []
-                let deveMostrarMensagem = false
-                if(opcao1.nome === item.nome && opcao1.id !== id) {
-                   deveMostrarMensagem = true 
-                   // alert('combinação correta!')
-                    this.exibirNumeros(item.nome)
-                    this.tela.exibirMensagem(true)
-                    return;
-                }
-                //alert('combinação incorreta!')
-                this.tela.exibirMensagem(false)
-                break;
-        }
-    }
-    mostrarNumerosEscondidos() {
-        const numerosEscondidos = this.numerosEscondidos
-        for (const numero of numerosEscondidos) {
-            const { img } = this.numerosIniciais.find(item => item.nome === numero.nome)
-            numero.img = img
-        }
-        this.tela.atualizarImagens(numerosEscondidos)
+        this.esconderHerois(copias)
+        this.tela.exibirCarregando(false)
+
     }
 
     jogar() {
