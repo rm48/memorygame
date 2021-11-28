@@ -22,7 +22,7 @@ class Tela {
     static obterCodigoHtml(item) {
        return `
         
-            <span class="card" style="width: 25%;" onclick="window.verificarSelecao('${item.id}', '${item.nome}')">
+            <span class="card" style="width: 25%" onclick="window.verificarSelecao('${item.id}', '${item.nome}')">
                 <img name="${item.nome}" src="${item.img}" class="card-img-top" alt="..." />
             </span>
             
@@ -58,7 +58,7 @@ class Tela {
     }
 
     static iniciarContador() {
-        let contarAte = 3
+        let contarAte = 10
         const identificadorNoTexto = "$$contagem"
         const textoPadrao = `Começando em ${identificadorNoTexto} segundos...`
         const elementoContador = document.getElementById(ID_CONTADOR)
@@ -89,11 +89,11 @@ class Tela {
         }
         carregando.classList.add(CLASSE_INVISIVEL)
     }
-    static atualizarImagens(itens) {
+    static atualizarIcones(itens) {
         const codigoHtml = Tela.gerarStringHTMLPelaImagem(itens)
         Tela.alterarConteudoHTML(codigoHtml)
     }
-    static exibirHerois(nome, img) {
+    static exibirIcones(nome, img) {
         const elements = document.getElementsByName(nome)
         elements.forEach(item => (item.src = img))
     }
