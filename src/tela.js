@@ -58,7 +58,7 @@ class Tela {
     }
 
     static iniciarContador() {
-        let contarAte = 10
+        let contarAte = 20
         const identificadorNoTexto = "$$contagem"
         const textoPadrao = `Começando em ${identificadorNoTexto} segundos...`
         const elementoContador = document.getElementById(ID_CONTADOR)
