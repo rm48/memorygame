@@ -98,7 +98,7 @@ class JogoDaMemoria {
         this.tela.exibirCarregando()
 
         const idIntervalo = this.tela.iniciarContador()
-        await this.util.timeout(10000);
+        await this.util.timeout(20000);
         this.tela.limparContador(idIntervalo)
 
         this.esconderIcones(copias)
