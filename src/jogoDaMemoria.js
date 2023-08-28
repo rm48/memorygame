@@ -1,6 +1,4 @@
-
 class JogoDaMemoria {
-
 
     constructor({ tela, util }) {
         this.tela = tela
@@ -18,32 +16,25 @@ class JogoDaMemoria {
             { img: './icones/8.gif', nome: '8' },
             { img: './icones/9.gif', nome: '9' },
             { img: './icones/10.gif', nome: '10' },
-
-
         ]
-
-        this.iconesEscondidos = []
-        this.iconesSelecionados = []
+        this.iconesOcultosCopia = []
+        this.iconesClicados = []
     }
 
     inicializar() {
         this.tela.atualizarIcones(this.iconesIniciais)
-        // quando essa função executar, vai ignorar o this de window 
-        // ela vai usar o this dessa tela
         this.tela.configurarBotaoJogar(this.jogar.bind(this))
-        this.tela.configurarClickVerificarSelecao(this.verificarSelecao.bind(this))
-        this.tela.configurarBotaoMostrarTudo(this.mostrarIconesEscondidos.bind(this))
-
+        this.tela.configurarClickVerificarClique(this.verificarClique.bind(this))
     }
-    esconderIcones(icones) {
+
+    ocultarIcones(icones) {
         const iconesOcultos = icones.map(({ nome, id }) => ({
             id,
             nome,
             img: this.iconePadrao
         }))
-
         this.tela.atualizarIcones(iconesOcultos)
-        this.iconesEscondidos = iconesOcultos
+        this.iconesOcultosCopia = iconesOcultos
     }
 
     exibirIcones(nomeIcone) {
@@ -51,63 +42,88 @@ class JogoDaMemoria {
         this.tela.exibirIcones(nomeIcone, img)
     }
 
-    verificarSelecao(id, nome) {
-        const item = { id, nome }
-        // alert(`Olá: ${nome}, id: ${id}`)
-        const iconesSelecionados = this.iconesSelecionados.length
-        switch (iconesSelecionados) {
-            case 0:
-                this.iconesSelecionados.push(item)
-                break;
-            case 1:
-                const [opcao1] = this.iconesSelecionados
-                // zerar itens, para nao selecionar mais de dois
-                this.iconesSelecionados = []
-                let deveMostrarMensagem = false
-                if (opcao1.nome === item.nome && opcao1.id !== id) {
-                    deveMostrarMensagem = true
-                    this.exibirIcones(item.nome)
-                    this.tela.exibirMensagem(true)
-                    return;
-                }
-                this.tela.exibirMensagem(false)
-                break;
+    async verificarClique(id, nome) {
+        if (segundos > tempoFim) {
+            this.tela.pararContador()
+        }
+        if (podeJogar) {
+            const item = { id, nome }
+            const iconesClicados = this.iconesClicados.length
+            switch (iconesClicados) {
+                case 0:
+                    this.iconesClicados.push(item)
+                    this.mostrariconesOcultosCopia(item.id, item.nome, jogada = 0)
+                    break;
+                case 1:
+                    const [opcao1] = this.iconesClicados
+                    this.iconesClicados = []
+                    if (opcao1.nome === item.nome && opcao1.id === id) {
+                        this.mostrariconesOcultosCopia(opcao1.id, opcao1.nome, jogada = 1)
+                        return
+                    }
+                    else if (opcao1.nome === item.nome && opcao1.id !== id) {
+                        //this.exibirIcones(item.nome)
+                        this.mostrariconesOcultosCopia(item.id, item.nome, jogada)
+                        acertos++
+                        if (acertos === 10) {
+                            podeJogar = false
+                            clearInterval(startTimer)
+                            this.tela.mostrarFim("VOCÊ VENCEU!")
+                            return
+                        }
+                        jogada = 0
+                        tempoFim += 5
+                        this.tela.mudarFim()
+                        return;
+                    }
+                    this.mostrariconesOcultosCopia(opcao1.id, opcao1.nome, jogada = 1)
+                    break;
+            }
         }
     }
-    mostrarIconesEscondidos() {
-        const iconesEscondidos = this.iconesEscondidos
-        for (const icone of iconesEscondidos) {
+
+    mostrariconesOcultosCopia(id, nome, par) {
+        const iconesExibidos = this.iconesOcultosCopia
+        for (const icone of iconesExibidos) {
             const { img } = this.iconesIniciais.find(item => item.nome === icone.nome)
-            icone.img = img
+            if (icone.nome === nome && icone.id == id) {
+                icone.img = img
+                if (par) {
+                    icone.img = this.iconePadrao
+                    jogada = 0
+                }
+            }
         }
-        this.tela.atualizarIcones(iconesEscondidos)
+        this.tela.atualizarIcones(iconesExibidos)
     }
+
     async embaralhar() {
         const copias = this.iconesIniciais
-
-            // duplicar os itens
             .concat(this.iconesIniciais)
-            // entrar em cada um dos itens e gerar um id para cada
             .map((item) => {
                 return Object.assign({}, item, { id: (Math.random() / 0.5) })
             })
-            // ordenar
             .sort(() => Math.random() - 0.5)
 
         this.tela.atualizarIcones(copias)
-        this.tela.exibirCarregando()
-
-        const idIntervalo = this.tela.iniciarContador()
-        await this.util.timeout(20000);
-        this.tela.limparContador(idIntervalo)
-
-        this.esconderIcones(copias)
-        this.tela.exibirCarregando(false)
-
+        acertos = 0
+        podeJogar = false
+        segundos = 0
+        tempoFim = 10
+        this.tela.mudarFim()
+        this.tela.exibirMensagem()
+        let tempo = 3;
+        const idIntervalo = this.tela.iniciarPreparador('Iniciando em ', tempo)
+        await this.util.timeout(1000 * tempo);
+        this.tela.limparPreparador(idIntervalo)
+        this.ocultarIcones(copias)
+        podeJogar = true
+        this.tela.iniciarContador()
+        this.tela.mudarFim()
     }
 
     jogar() {
+        this.tela.pararContador()
         this.embaralhar()
     }
-
 }
