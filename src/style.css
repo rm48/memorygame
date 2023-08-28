@@ -1,0 +1,64 @@
+body{
+			background: black;	
+		}
+h1 {	
+			font-family: "Lucida Console", "Courier New", monospace;		
+			font-size:20px;	
+  		color: rgb(255, 238, 4);
+		}	
+		.divmenu {
+			color: rgb(0, 5, 5);
+			max-width: 360px;
+			background:  rgb(7, 94, 7);
+		}
+		.alert {
+			max-width: 140px;
+		}
+		.divsubmenu {
+			max-width: 360px;
+			background:  rgb(121, 1, 81);
+		}
+		.divmensagem {		
+			max-width: 360px;
+			background:  rgb(0, 42, 54);
+		}
+		.divConteudo	{ 
+			max-width: 360px;
+			background:  rgb(44, 7, 32);
+		}
+		.btn {
+			width: 112px;
+			height: 70px;
+			font-size: 20px;
+			border-style: none;
+			border-radius: 5%;	
+			display: inline-block;
+		}	
+		.btn-danger {
+			background-color: rgb(18, 103, 201);		
+			color: rgb(0, 0, 0);
+		}
+		.btn-success {
+			background-color: rgb(3, 141, 38);
+			color: rgb(255, 255, 255);
+			
+		}
+		.alert-danger{
+			background-color: rgb(255, 0, 0);
+			color: rgb(255, 255, 255);
+		}
+		.alert-success{
+			background-color: rgb(32, 194, 0);
+			color: rgb(255, 255, 255);
+		}
+		.icone {
+			width: 78px;
+			height: 78px;
+			border-style:inset;
+			border-width: 1px;
+			border-color: rgb(0, 0, 0);
+			border-radius: 48%;
+		}
+		.invisible {
+			opacity: 0;
+		}
