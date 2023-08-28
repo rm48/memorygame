@@ -1,112 +1,106 @@
-// para saber que é uma variavel global
-const util = Util
-
-const ID_CONTEUDO = "conteudo"
 const ID_BOTAO_JOGAR = "jogar"
 const ID_MENSAGEM = "mensagem"
-const CLASSE_INVISIVEL = "invisible"
-const ID_CARREGANDO = "carregando"
-const ID_CONTADOR = "contador"
-const ID_BOTAO_MOSTRAR_TUDO = "mostrarTudo"
-const MENSAGENS = {
-    sucesso: {
-        texto: "Correta!",
-        classe: "alert-success"
-    },
-    erro: {
-        texto: "Incorreta!",
-        classe: "alert-danger"
-    }
-}
+const ID_FIM = "fim"
+const ID_CONTEUDO = "conteudo"
+const ID_PREPARANDO = "preparando"
+//const CLASSE_INVISIVEL = "invisible"
+const ID_PREPARADOR = "preparador"
+
+
+
 class Tela {
+
     static obterCodigoHtml(item) {
-       return `
-        
-            <span class="card" style="width: 25%" onclick="window.verificarSelecao('${item.id}', '${item.nome}')">
-                <img name="${item.nome}" src="${item.img}" class="card-img-top" alt="..." />
-            </span>
-            
-       
+        return `   
+            <span   onclick="window.verificarClique('${item.id}', '${item.nome}')">
+                <img name="${item.nome}" src="${item.img}" class="icone" alt="${item.nome}" />
+            </span>  
         `
     }
+
     static alterarConteudoHTML(codigoHtml) {
         const conteudo = document.getElementById(ID_CONTEUDO)
         conteudo.innerHTML = codigoHtml
     }
+
     static gerarStringHTMLPelaImagem(data) {
         return data.map(Tela.obterCodigoHtml).join('')
     }
 
-    static async exibirMensagem(sucesso = true) {
-        
+    static exibirMensagem() {
         const elemento = document.getElementById(ID_MENSAGEM)
-        if(sucesso) {
-            elemento.classList.remove(MENSAGENS.erro.classe)
-            elemento.classList.add(MENSAGENS.sucesso.classe)
-            elemento.innerText = MENSAGENS.sucesso.texto
-        }
-        else {
-            elemento.classList.remove(MENSAGENS.sucesso.classe)
-            elemento.classList.add(MENSAGENS.erro.classe)
-            elemento.innerText = MENSAGENS.erro.texto
-        }
+        elemento.innerText = textoTempo
+    }
 
-        elemento.classList.remove(CLASSE_INVISIVEL)
-        await util.timeout(1000)
-        elemento.classList.add(CLASSE_INVISIVEL)
+    static iniciarPreparador(str, tm) {
+        let tempoInicio = tm
+        const identificadorNoTexto = "$$contagem"
+        const textoPadrao = `${str} ${identificadorNoTexto} segundos...`
+        const elementoPreparador = document.getElementById(ID_PREPARADOR)
+        const atualizarTexto = _ => { (elementoPreparador.innerHTML = textoPadrao.replace(identificadorNoTexto, tempoInicio--)) }
+        atualizarTexto()
+        const idIntervalo = setInterval(atualizarTexto, 1000);
+        return idIntervalo
+    }
 
+    static mostrarFim(str) {
+        document.getElementById(ID_PREPARADOR).innerHTML = str
     }
 
     static iniciarContador() {
-        let contarAte = 20
-        const identificadorNoTexto = "$$contagem"
-        const textoPadrao = `Começando em ${identificadorNoTexto} segundos...`
-        const elementoContador = document.getElementById(ID_CONTADOR)
-        
-        // toda vez que executar, vai tirar 1 do contador
-        const atualizarTexto = _ => 
-            (elementoContador.innerHTML = textoPadrao.replace(identificadorNoTexto, contarAte--))
-        
-        atualizarTexto()
-
-        // vai executar a cada segundo
-        const idIntervalo = setInterval(atualizarTexto, 1000);
-        return idIntervalo
-         
+        const elementoContador = document.getElementById(ID_MENSAGEM)
+        const addSecond = _ => (elementoContador.innerHTML = segundos++)
+        addSecond()
+        startTimer = setInterval(addSecond, 1000);
+        textoTempo = `${segundos}`
     }
-    static limparContador(idContador) {
+
+    static mudarFim() {
+        const elementoFim = document.getElementById(ID_FIM)
+        elementoFim.innerHTML = tempoFim
+    }
+
+    static pararContador() {
+        clearInterval(startTimer)
+        textoTempo = '0'
+        podeJogar = false
+        document.getElementById(ID_PREPARADOR).innerHTML = "TEMPO ESGOTADO"
+    }
+
+    static limparPreparador(idContador) {
         clearInterval(idContador)
-        document.getElementById(ID_CONTADOR).innerHTML = ""
+        document.getElementById(ID_PREPARADOR).innerHTML = "*"
     }
 
-
-    static exibirCarregando(mostrar = true ) {
-
-        const carregando = document.getElementById(ID_CARREGANDO)
-        if (mostrar) {
-            carregando.classList.remove(CLASSE_INVISIVEL)
-            return
-        }
-        carregando.classList.add(CLASSE_INVISIVEL)
+    static exibirMensagem() { //mostrar = true) {
+        const elementoContador = document.getElementById(ID_MENSAGEM)
+        elementoContador.innerHTML = tempoFim
+        //this.exibirMensagem(true)
+        const prepara = document.getElementById(ID_PREPARANDO)
+        //if (mostrar) {
+        //      prepara.classList.remove(CLASSE_INVISIVEL)
+        //     return
+        //  }
+        //  prepara.classList.add(CLASSE_INVISIVEL)
     }
+
     static atualizarIcones(itens) {
         const codigoHtml = Tela.gerarStringHTMLPelaImagem(itens)
         Tela.alterarConteudoHTML(codigoHtml)
     }
+
     static exibirIcones(nome, img) {
         const elements = document.getElementsByName(nome)
         elements.forEach(item => (item.src = img))
     }
+
     static configurarBotaoJogar(funcaoOnclick) {
         const btnJogar = document.getElementById(ID_BOTAO_JOGAR)
         btnJogar.onclick = funcaoOnclick
     }
-    static configurarClickVerificarSelecao(funcaoOnclick) {
-        window.verificarSelecao = funcaoOnclick
-    }
-    static configurarBotaoMostrarTudo(funcaoOnclick) {
-        const btnMostrarTudo = document.getElementById(ID_BOTAO_MOSTRAR_TUDO)
-        btnMostrarTudo.onclick = funcaoOnclick
+
+    static configurarClickVerificarClique(funcaoOnclick) {
+        window.verificarClique = funcaoOnclick
     }
 }
 
