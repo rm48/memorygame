@@ -69,7 +69,7 @@ class Tela {
 
     static limparPreparador(idContador) {
         clearInterval(idContador)
-        document.getElementById(ID_PREPARADOR).innerHTML = "*"
+        document.getElementById(ID_PREPARADOR).innerHTML = "________ Tempo ___ Limite"
     }
 
     static exibirMensagem() { //mostrar = true) {
